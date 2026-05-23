@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>VietBank</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        :root {
+            --red: #cc0000; --red-d: #990000; --red-l: #fff0f0;
+            --green: #1a9e5c; --orange: #e07800;
+            --gray: #f5f6f8; --border: #e5e5e5;
+            --txt: #1a1a1a; --txt2: #888;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #d8dde5; display:flex; justify-content:center; min-height:100vh;
+        }
+        .app { width:100%; max-width:430px; min-height:100vh; background:white; position:relative; overflow:hidden; box-shadow:0 0 60px rgba(0,0,0,.25); }
+
+        .sc { position:absolute; inset:0; background:white; overflow-y:auto; overflow-x:hidden; }
+        .sc.hide { display:none; }
+
+        /* ── LOGIN ── */
+        #s-login { display:flex; flex-direction:column; min-height:100vh; }
+        .lhdr { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--border); }
+        .logo-wrap { display:flex; align-items:center; gap:9px; }
+        .logo-box { width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,#cc0000,#880000); display:flex; align-items:center; justify-content:center; color:white; font-weight:900; font-size:17px; }
+        .logo-name { font-size:20px; font-weight:800; color:var(--red); }
+        .lbody { flex:1; display:flex; flex-direction:column; align-items:center; padding:36px 24px 20px; }
+        .ava { width:84px; height:84px; border-radius:50%; background:linear-gradient(135deg,#ffe0e0,#ffb3b3); display:flex; align-items:center; justify-content:center; margin-bottom:20px; box-shadow:0 4px 16px rgba(204,0,0,.15); }
+        .ava svg { width:46px; height:46px; fill:var(--red); opacity:.7; }
+        .iw { width:100%; margin-bottom:13px; position:relative; }
+        .iw input { width:100%; padding:15px 16px; border:1.5px solid var(--border); border-radius:12px; font-size:16px; outline:none; color:var(--txt); transition:border-color .2s,box-shadow .2s; }
+        .iw input:focus { border-color:var(--red); box-shadow:0 0 0 3px rgba(204,0,0,.08); }
+        .iw input::placeholder { color:#c0c0c0; }
+        .hint { width:100%; background:#f8f9ff; border:1px solid #dde; border-radius:10px; padding:10px 14px; margin-bottom:16px; font-size:12.5px; color:#555; line-height:1.7; }
+        .hint b { color:var(--red); }
+        .btn { width:100%; padding:16px; background:var(--red); color:white; border:none; border-radius:13px; font-size:16px; font-weight:700; cursor:pointer; transition:background .15s,transform .1s; }
+        .btn:hover { background:var(--red-d); }
+        .btn:active { transform:scale(.98); }
+        .btn:disabled { background:#ccc; cursor:not-allowed; }
+        .lfooter { padding:14px 24px 28px; display:flex; justify-content:space-around; border-top:1px solid var(--border); }
+        .fbt { display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; color:var(--red); font-size:12.5px; font-weight:500; }
+
+        /* ── HOME ── */
+        #s-home { background:var(--gray); min-height:100vh; }
+        .hhdr { background:linear-gradient(140deg,#cc0000,#880000); padding:22px 20px 44px; color:white; }
+        .hhdr-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+        .greet-s { font-size:13px; opacity:.82; margin-bottom:2px; }
+        .greet-n { font-size:19px; font-weight:800; }
+        .nbell { width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:19px; position:relative; }
+        .nbadge { position:absolute; top:-3px; right:-3px; width:18px; height:18px; background:#ff4444; border-radius:50%; font-size:10px; font-weight:700; display:none; align-items:center; justify-content:center; border:2px solid #880000; color:white; }
+        .nbadge.on { display:flex; }
+        .balcard { background:white; border-radius:20px; padding:22px; margin:-24px 16px 0; box-shadow:0 6px 24px rgba(0,0,0,.11); }
+        .bal-lbl { font-size:12px; color:var(--txt2); margin-bottom:6px; }
+        .bal-row { display:flex; align-items:flex-end; gap:6px; }
+        .bal-n { font-size:30px; font-weight:900; color:var(--txt); }
+        .bal-c { font-size:17px; font-weight:700; color:var(--red); padding-bottom:2px; }
+        .bal-s { font-size:12px; color:var(--txt2); margin-top:6px; }
+        .agrid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:18px 16px; }
+        .abt { background:white; border-radius:16px; padding:14px 8px; display:flex; flex-direction:column; align-items:center; gap:7px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.06); transition:transform .15s,box-shadow .15s; border:none; }
+        .abt:hover { transform:translateY(-2px); box-shadow:0 5px 18px rgba(0,0,0,.1); }
+        .abt:active { transform:scale(.95); }
+        .aico { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; }
+        .r{background:#fff0f0}.b{background:#eef3ff}.o{background:#fff6e8}.g{background:#e8f8ef}.p{background:#f3eeff}
+        .albl { font-size:11.5px; font-weight:600; color:var(--txt); text-align:center; }
+        .stitle { font-size:15px; font-weight:700; color:var(--txt); padding:0 16px; margin-bottom:10px; }
+        .txlist { margin:0 16px 24px; }
+        .txi { background:white; border-radius:14px; padding:13px 14px; display:flex; align-items:center; gap:11px; margin-bottom:7px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+        .txic { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+        .txic.cr{background:#e8f8ef} .txic.db{background:#fff0f0}
+        .txm { flex:1; min-width:0; }
+        .txn { font-size:13.5px; font-weight:600; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .txs2 { font-size:11.5px; color:var(--txt2); margin-top:2px; }
+        .txv { font-size:14px; font-weight:700; flex-shrink:0; }
+        .txv.cr{color:var(--green)} .txv.db{color:var(--red)}
+
+        /* ── SCREEN HEADER ── */
+        .schdr { display:flex; align-items:center; padding:15px 18px; background:white; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:20; }
+        .back { background:none; border:none; font-size:22px; cursor:pointer; color:var(--txt); padding:2px 10px 2px 0; }
+        .sctitle { font-size:17px; font-weight:700; color:var(--txt); flex:1; }
+
+        /* ── ACCOUNT ── */
+        #s-account { background:var(--gray); min-height:100vh; }
+        .abanner { background:linear-gradient(135deg,#cc0000,#880000); padding:28px 22px; text-align:center; color:white; }
+        .abal-l { font-size:13px; opacity:.82; margin-bottom:6px; }
+        .abal-n { font-size:34px; font-weight:900; margin-bottom:4px; }
+        .astk { font-size:13px; opacity:.7; }
+        .icard { background:white; border-radius:16px; margin:16px; padding:4px 18px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+        .irow { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--border); }
+        .irow:last-child { border-bottom:none; }
+        .ilbl { font-size:13px; color:var(--txt2); }
+        .ival { font-size:13.5px; font-weight:700; color:var(--txt); }
+
+        /* ── TRANSFER ── */
+        #s-transfer { background:var(--gray); min-height:100vh; }
+        .fcard { background:white; border-radius:16px; padding:18px; margin:14px 16px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+        .fg { margin-bottom:16px; }
+        .fg:last-child { margin-bottom:0; }
+        .flbl { font-size:11.5px; font-weight:700; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:7px; display:block; }
+        .finp { width:100%; padding:13px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:15px; outline:none; color:var(--txt); transition:border-color .2s; }
+        .finp:focus { border-color:var(--red); }
+        .amtw { position:relative; }
+        .amtc { position:absolute; right:14px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:800; color:var(--red); }
+        .qrow { display:flex; gap:7px; flex-wrap:wrap; margin-top:9px; }
+        .qb { padding:5px 13px; border:1.5px solid var(--red); border-radius:20px; background:none; color:var(--red); font-size:12.5px; font-weight:700; cursor:pointer; transition:all .15s; }
+        .qb:hover { background:var(--red); color:white; }
+        .rbox { background:#fff8f8; border:1.5px solid #fcc; border-radius:10px; padding:11px 13px; margin-top:9px; display:none; }
+        .rbox.on { display:block; }
+        .rn { font-size:14px; font-weight:700; color:var(--red); }
+        .rm { font-size:12px; color:#999; margin-top:2px; }
+
+        /* ── MONITOR ── */
+        #s-monitor { background:var(--gray); min-height:100vh; }
+        .ibanner { background:linear-gradient(135deg,#fff6e8,#ffe8cc); border:1px solid #ffd099; border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:13px; color:#7a4a00; line-height:1.6; }
+        .mitem { background:white; border-radius:14px; padding:15px; display:flex; align-items:center; gap:11px; margin-bottom:8px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+        .mava { width:44px; height:44px; border-radius:12px; background:var(--red-l); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+        .minf { flex:1; min-width:0; }
+        .mn { font-size:14px; font-weight:700; color:var(--txt); }
+        .me2 { font-size:12px; color:var(--txt2); margin-top:1px; }
+        .mt2 { font-size:12px; color:var(--red); font-weight:600; margin-top:3px; }
+        .delbtn { background:none; border:none; font-size:18px; cursor:pointer; color:#ccc; }
+        .delbtn:hover { color:var(--red); }
+
+        /* ── APPROVAL MODAL ── */
+        .ov { position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:1000; display:none; align-items:center; justify-content:center; padding:20px; }
+        .ov.on { display:flex; }
+        .modal { background:white; border-radius:24px; padding:26px 22px; width:100%; max-width:390px; animation:popIn .3s cubic-bezier(.34,1.56,.64,1); }
+        @keyframes popIn { from{transform:scale(.85);opacity:0} to{transform:scale(1);opacity:1} }
+        .mico { width:64px; height:64px; border-radius:50%; background:#fff6e8; display:flex; align-items:center; justify-content:center; font-size:30px; margin:0 auto 14px; }
+        .mttl { font-size:19px; font-weight:800; color:var(--txt); text-align:center; margin-bottom:4px; }
+        .msub { font-size:13px; color:var(--txt2); text-align:center; margin-bottom:18px; line-height:1.5; }
+        .txbox { background:var(--gray); border-radius:12px; padding:14px; margin-bottom:18px; }
+        .tr { display:flex; justify-content:space-between; margin-bottom:8px; }
+        .tr:last-child { margin-bottom:0; }
+        .trl { font-size:12.5px; color:var(--txt2); }
+        .trv { font-size:12.5px; font-weight:700; color:var(--txt); max-width:58%; text-align:right; word-break:break-all; }
+        .trv.red { color:var(--red); font-size:15px; }
+        .timew { text-align:center; margin-bottom:20px; }
+        .timel { font-size:12px; color:var(--txt2); margin-bottom:8px; }
+        .timering { width:88px; height:88px; border-radius:50%; border:5px solid var(--border); margin:0 auto 6px; display:flex; align-items:center; justify-content:center; transition:border-color .4s; }
+        .timering.urg { border-color:var(--red); animation:pulse 1s infinite; }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(204,0,0,.25)} 50%{box-shadow:0 0 0 10px rgba(204,0,0,0)} }
+        .timen { font-size:22px; font-weight:900; color:var(--red); }
+        .times { font-size:11px; color:#bbb; }
+        .mbtns { display:flex; gap:10px; }
+        .breject { flex:1; padding:14px; background:none; border:2px solid var(--border); border-radius:12px; font-size:14.5px; font-weight:700; color:var(--txt2); cursor:pointer; }
+        .breject:hover { border-color:var(--red); color:var(--red); }
+        .bapprove { flex:2; padding:14px; background:var(--green); border:none; border-radius:12px; font-size:14.5px; font-weight:700; color:white; cursor:pointer; }
+        .bapprove:hover { filter:brightness(.92); }
+
+        /* ── PENDING MODAL ── */
+        #ov-pending .modal { text-align:center; }
+        .spin { width:56px; height:56px; border:5px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 16px; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+        .pttl { font-size:18px; font-weight:800; color:var(--txt); margin-bottom:6px; }
+        .psub { font-size:13px; color:var(--txt2); line-height:1.6; margin-bottom:20px; }
+        .ptimew { background:var(--gray); border-radius:12px; padding:14px; margin-bottom:20px; }
+        .pamt { font-size:22px; font-weight:900; color:var(--red); margin-bottom:4px; }
+        .pto { font-size:13px; color:var(--txt2); }
+        .ptimer { font-size:13px; color:var(--orange); font-weight:600; margin-top:8px; }
+        .bcancel { width:100%; padding:14px; background:none; border:2px solid var(--border); border-radius:12px; font-size:14.5px; font-weight:700; color:var(--txt2); cursor:pointer; }
+
+        /* ── NOTIF PANEL ── */
+        .npanel { position:fixed; top:0; right:-320px; width:300px; height:100%; background:white; z-index:500; box-shadow:-4px 0 24px rgba(0,0,0,.18); transition:right .28s ease; overflow-y:auto; }
+        .npanel.on { right:0; }
+        .nphdr { background:linear-gradient(135deg,#cc0000,#880000); padding:18px 16px; display:flex; justify-content:space-between; align-items:center; }
+        .npttl { color:white; font-size:16px; font-weight:700; }
+        .npclose { background:none; border:none; color:white; font-size:20px; cursor:pointer; }
+        .npitem { padding:13px 15px; border-bottom:1px solid var(--border); }
+        .npn { font-size:13.5px; font-weight:600; color:var(--txt); }
+        .npd { font-size:12px; color:var(--txt2); margin-top:2px; }
+        .npt { font-size:11px; color:#bbb; margin-top:3px; }
+
+        .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(80px); background:#222; color:white; padding:11px 20px; border-radius:24px; font-size:13.5px; font-weight:500; z-index:9999; transition:transform .3s ease; white-space:nowrap; max-width:90vw; text-align:center; }
+        .toast.on { transform:translateX(-50%) translateY(0); }
+        .toast.ok { background:var(--green); }
+        .toast.err { background:var(--red); }
+
+        .empty { text-align:center; padding:38px 20px; }
+        .empty .ei { font-size:46px; margin-bottom:10px; }
+        .empty p { font-size:14px; color:var(--txt2); }
+        ::-webkit-scrollbar { width:3px; }
+        ::-webkit-scrollbar-thumb { background:#ddd; border-radius:2px; }
+    </style>
+</head>
+<body>
+<div class="app">
+
+    <!-- LOGIN -->
+    <div id="s-login" class="sc">
+        <div class="lhdr">
+            <button style="font-size:20px;cursor:pointer;color:#666;background:none;border:none" onclick="toast('Demo app 😊')">✕</button>
+            <div class="logo-wrap">
+                <div class="logo-box">V</div>
+                <span class="logo-name">VIETBANK</span>
+            </div>
+            <span style="font-size:22px">🇻🇳</span>
+        </div>
+        <div class="lbody">
+            <div class="ava">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+            </div>
+            <div class="iw">
+                <input id="l-email" type="email" placeholder="Nhập Gmail của bạn" autocomplete="email">
+            </div>
+            <div class="hint">
+                💡 <b>Đăng nhập bằng Gmail — không cần mật khẩu</b><br>
+                Tài khoản demo có sẵn:<br>
+                • <b>huy@gmail.com</b> — 50 triệu ₫<br>
+                • <b>alice@gmail.com</b> — 30 triệu ₫<br>
+                • <b>bob@gmail.com</b> — 20 triệu ₫
+            </div>
+            <button class="btn" onclick="doLogin()">Đăng nhập →</button>
+        </div>
+        <div class="lfooter">
+            <div class="fbt"><span>📤</span><span>Chia sẻ</span></div>
+            <div class="fbt"><span>❓</span><span>Hỏi đáp</span></div>
+            <div class="fbt"><span>📞</span><span>Liên hệ</span></div>
+        </div>
+    </div>
+
+    <!-- HOME -->
+    <div id="s-home" class="sc hide">
+        <div class="hhdr">
+            <div class="hhdr-top">
+                <div>
+                    <div class="greet-s">Xin chào 👋</div>
+                    <div class="greet-n" id="h-name">—</div>
+                </div>
+                <div class="nbell" onclick="openNP()">🔔<div class="nbadge" id="nbadge">0</div></div>
+            </div>
+        </div>
+        <div class="balcard">
+            <div class="bal-lbl">Số dư khả dụng</div>
+            <div class="bal-row"><span class="bal-n" id="h-bal">0</span><span class="bal-c">₫</span></div>
+            <div class="bal-s" id="h-stk">STK: —</div>
+        </div>
+        <div style="height:18px"></div>
+        <div class="agrid">
+            <button class="abt" onclick="go('account')"><div class="aico r">💳</div><span class="albl">Tài khoản</span></button>
+            <button class="abt" onclick="go('transfer')"><div class="aico b">💸</div><span class="albl">Chuyển tiền</span></button>
+            <button class="abt" onclick="go('monitor')"><div class="aico o">🔍</div><span class="albl">Giám sát</span></button>
+            <button class="abt" onclick="toast('Sắp ra mắt')"><div class="aico g">📊</div><span class="albl">Thống kê</span></button>
+            <button class="abt" onclick="toast('Sắp ra mắt')"><div class="aico p">💰</div><span class="albl">Tiết kiệm</span></button>
+            <button class="abt" onclick="doLogout()"><div class="aico r">🚪</div><span class="albl">Đăng xuất</span></button>
+        </div>
+        <div class="stitle">Giao dịch gần đây</div>
+        <div class="txlist" id="h-txs"></div>
+    </div>
+
+    <!-- ACCOUNT -->
+    <div id="s-account" class="sc hide">
+        <div class="schdr">
+            <button class="back" onclick="go('home')">←</button>
+            <span class="sctitle">Tài khoản</span>
+        </div>
+        <div class="abanner">
+            <div class="abal-l">Số dư khả dụng</div>
+            <div class="abal-n" id="a-bal">0 ₫</div>
+            <div class="astk" id="a-stk">STK: —</div>
+        </div>
+        <div class="icard">
+            <div class="irow"><span class="ilbl">Chủ tài khoản</span><span class="ival" id="a-owner">—</span></div>
+            <div class="irow"><span class="ilbl">Số tài khoản</span><span class="ival" id="a-num">—</span></div>
+            <div class="irow"><span class="ilbl">Email</span><span class="ival" id="a-email">—</span></div>
+            <div class="irow"><span class="ilbl">Ngân hàng</span><span class="ival">VIETBANK</span></div>
+            <div class="irow"><span class="ilbl">Trạng thái</span><span class="ival" style="color:var(--green)">✓ Hoạt động</span></div>
+        </div>
+        <div class="stitle">Lịch sử giao dịch</div>
+        <div class="txlist" id="a-txs"></div>
+    </div>
+
+    <!-- TRANSFER -->
+    <div id="s-transfer" class="sc hide">
+        <div class="schdr">
+            <button class="back" onclick="go('home')">←</button>
+            <span class="sctitle">Chuyển tiền</span>
+        </div>
+        <div style="background:var(--gray);min-height:calc(100vh - 56px);padding-bottom:24px">
+            <div class="fcard">
+                <div class="fg">
+                    <label class="flbl">Email người nhận</label>
+                    <input class="finp" id="t-email" type="email" placeholder="email@gmail.com" oninput="lookupRcpt(this.value)">
+                    <div class="rbox" id="rbox"><div class="rn" id="rn">—</div><div class="rm" id="rm">—</div></div>
+                </div>
+                <div class="fg">
+                    <label class="flbl">Số tiền</label>
+                    <div class="amtw">
+                        <input class="finp" id="t-amt" type="number" placeholder="0" min="1000" style="padding-right:40px">
+                        <span class="amtc">₫</span>
+                    </div>
+                    <div class="qrow">
+                        <button class="qb" onclick="sa(100000)">100K</button>
+                        <button class="qb" onclick="sa(500000)">500K</button>
+                        <button class="qb" onclick="sa(1000000)">1M</button>
+                        <button class="qb" onclick="sa(5000000)">5M</button>
+                        <button class="qb" onclick="sa(10000000)">10M</button>
+                    </div>
+                </div>
+                <div class="fg">
+                    <label class="flbl">Nội dung</label>
+                    <input class="finp" id="t-note" type="text" placeholder="VD: Chuyển tiền sinh hoạt">
+                </div>
+            </div>
+            <div style="margin:0 16px">
+                <button class="btn" id="btn-tf" onclick="doTransfer()">Chuyển tiền ngay →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MONITOR -->
+    <div id="s-monitor" class="sc hide">
+        <div class="schdr">
+            <button class="back" onclick="go('home')">←</button>
+            <span class="sctitle">Giám sát giao dịch</span>
+        </div>
+        <div style="background:var(--gray);min-height:calc(100vh - 56px);padding-bottom:24px">
+            <div class="fcard">
+                <div class="ibanner">
+                    🔍 Nhập Gmail cần giám sát. Khi người đó chuyển tiền vượt ngưỡng, <b>bạn nhận thông báo ngay</b> để duyệt hoặc từ chối trong vòng <b>10 phút</b>.
+                </div>
+                <div class="fg">
+                    <label class="flbl">Gmail cần giám sát</label>
+                    <input class="finp" id="m-email" type="email" placeholder="email@gmail.com">
+                </div>
+                <div class="fg">
+                    <label class="flbl">Ngưỡng cảnh báo (₫)</label>
+                    <div class="amtw">
+                        <input class="finp" id="m-thresh" type="number" placeholder="1,000,000" style="padding-right:40px">
+                        <span class="amtc">₫</span>
+                    </div>
+                </div>
+                <button class="btn" onclick="addMonitor()">+ Thêm giám sát</button>
+            </div>
+            <div class="stitle">Đang giám sát</div>
+            <div id="m-list" style="margin:0 16px">
+                <div class="empty"><div class="ei">👀</div><p>Chưa có Gmail nào được giám sát</p></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- APPROVAL MODAL (Admin) -->
+<div class="ov" id="ov-approval">
+    <div class="modal">
+        <div class="mico">⚠️</div>
+        <div class="mttl">Giao dịch cần duyệt</div>
+        <div class="msub">Người được giám sát đang thực hiện chuyển tiền vượt ngưỡng. Duyệt hay từ chối?</div>
+        <div class="txbox">
+            <div class="tr"><span class="trl">Người gửi</span><span class="trv" id="ap-from">—</span></div>
+            <div class="tr"><span class="trl">Người nhận</span><span class="trv" id="ap-to">—</span></div>
+            <div class="tr"><span class="trl">Số tiền</span><span class="trv red" id="ap-amt">—</span></div>
+            <div class="tr"><span class="trl">Nội dung</span><span class="trv" id="ap-note">—</span></div>
+        </div>
+        <div class="timew">
+            <div class="timel">Tự động từ chối sau</div>
+            <div class="timering" id="timering"><span class="timen" id="timen">10:00</span></div>
+            <div class="times">phút : giây</div>
+        </div>
+        <div class="mbtns">
+            <button class="breject" onclick="rejectTx()">✕ Từ chối</button>
+            <button class="bapprove" onclick="approveTx()">✓ Duyệt</button>
+        </div>
+    </div>
+</div>
+
+<!-- PENDING MODAL (Sender chờ) -->
+<div class="ov" id="ov-pending">
+    <div class="modal">
+        <div class="spin"></div>
+        <div class="pttl">Đang chờ duyệt...</div>
+        <div class="psub">Giao dịch của bạn đang chờ admin xem xét. Tối đa <b>10 phút</b>.</div>
+        <div class="ptimew">
+            <div class="pamt" id="p-amt">—</div>
+            <div class="pto" id="p-to">→ —</div>
+            <div class="ptimer" id="p-timer">⏳ Còn 10:00</div>
+        </div>
+        <button class="bcancel" onclick="cancelPending()">Huỷ giao dịch</button>
+    </div>
+</div>
+
+<!-- NOTIF PANEL -->
+<div class="npanel" id="npanel">
+    <div class="nphdr">
+        <span class="npttl">🔔 Thông báo</span>
+        <button class="npclose" onclick="closeNP()">✕</button>
+    </div>
+    <div id="np-list"><div class="empty"><div class="ei">🔔</div><p>Không có thông báo</p></div></div>
+</div>
+
+<div class="toast" id="toast-el"></div>
+
+<script>
+const socket = io();
+
+let me = null;
+let monList = [];
+let notifs = [];
+let pendTxId = null;
+let curApproval = null;
+let timerID = null;
+let timeLeft = 600;
+let pendTimerID = null;
+let pendTimeLeft = 600;
+
+// ── SOCKET EVENTS ──
+socket.on('pending_transaction', data => {
+    curApproval = data;
+    openApproval(data);
+    addNotif('⚠️ Giao dịch cần duyệt', `${data.fromName} chuyển ${fmt(data.amount)} ₫`);
+});
+
+socket.on('transfer_done', data => {
+    me.balance = data.balance;
+    closePending();
+    toast(`✓ Chuyển ${fmt(data.amount)} ₫ thành công!`, 'ok');
+    addNotif('✓ Chuyển tiền thành công', `${fmt(data.amount)} ₫ → ${data.toName}`);
+    refreshBalance();
+    if (!document.getElementById('s-home').classList.contains('hide')) refreshHome();
+});
+
+socket.on('transfer_received', data => {
+    me.balance = data.balance;
+    toast(`+${fmt(data.amount)} ₫ từ ${data.fromName}`, 'ok');
+    addNotif('💰 Nhận tiền', `+${fmt(data.amount)} ₫ từ ${data.fromName}`);
+    refreshBalance();
+});
+
+socket.on('transfer_rejected', data => {
+    closePending();
+    toast(`Giao dịch ${fmt(data.amount)} ₫ bị từ chối`, 'err');
+    addNotif('✕ Giao dịch bị từ chối', `${fmt(data.amount)} ₫ đã bị admin từ chối`);
+});
+
+socket.on('transaction_expired', data => {
+    if (pendTxId === data.txId) closePending();
+    if (curApproval?.txId === data.txId) closeApproval();
+    toast('⏰ Giao dịch tự động huỷ do hết thời gian', 'err');
+    addNotif('⏰ Hết hạn duyệt', `Giao dịch ${fmt(data.amount)} ₫ đã tự động huỷ`);
+});
+
+// ── NAVIGATION ──
+function show(id) {
+    document.querySelectorAll('.sc').forEach(s => s.classList.add('hide'));
+    const el = document.getElementById('s-' + id);
+    el.classList.remove('hide');
+    el.scrollTop = 0;
+}
+
+async function go(id) {
+    if (id === 'home')     await refreshHome();
+    if (id === 'account')  await refreshAccount();
+    if (id === 'transfer') refreshTransfer();
+    if (id === 'monitor')  await refreshMonitor();
+    show(id);
+}
+
+// ── LOGIN ──
+async function doLogin() {
+    const email = document.getElementById('l-email').value.trim().toLowerCase();
+    if (!email || !email.includes('@')) { toast('Nhập email hợp lệ', 'err'); return; }
+    try {
+        const r = await api('POST', '/api/login', { email });
+        me = r;
+        socket.emit('register', email);
+        await go('home');
+        toast(`Xin chào, ${r.name}! 🎉`, 'ok');
+    } catch(e) { toast(e.message, 'err'); }
+}
+
+function doLogout() {
+    me = null; monList = []; notifs = [];
+    document.getElementById('l-email').value = '';
+    show('login');
+    toast('Đã đăng xuất');
+}
+
+// ── HOME ──
+async function refreshHome() {
+    if (!me) return;
+    try {
+        const u = await api('GET', `/api/user/${me.email}`);
+        me.balance = u.balance;
+        document.getElementById('h-name').textContent = me.name;
+        refreshBalance();
+        const txs = (u.txs || []).slice(0, 5);
+        document.getElementById('h-txs').innerHTML = txs.length
+            ? txs.map(txHTML).join('')
+            : '<div class="empty"><div class="ei">💸</div><p>Chưa có giao dịch</p></div>';
+        updateBadge();
+    } catch(e) {}
+}
+
+function refreshBalance() {
+    document.getElementById('h-bal').textContent = fmt(me.balance);
+    document.getElementById('h-stk').textContent = 'STK: ' + me.stk;
+}
+
+function txHTML(t) {
+    return `<div class="txi">
+        <div class="txic ${t.type}">${t.type==='cr'?'⬇️':'⬆️'}</div>
+        <div class="txm">
+            <div class="txn">${t.who}</div>
+            <div class="txs2">${t.date} · ${t.note}</div>
+        </div>
+        <div class="txv ${t.type}">${t.type==='cr'?'+':'-'}${fmt(t.amt)} ₫</div>
+    </div>`;
+}
+
+// ── ACCOUNT ──
+async function refreshAccount() {
+    try {
+        const u = await api('GET', `/api/user/${me.email}`);
+        me.balance = u.balance;
+        document.getElementById('a-bal').textContent   = fmt(u.balance) + ' ₫';
+        document.getElementById('a-stk').textContent   = 'STK: ' + me.stk;
+        document.getElementById('a-owner').textContent = me.name;
+        document.getElementById('a-num').textContent   = me.stk;
+        document.getElementById('a-email').textContent = me.email;
+        document.getElementById('a-txs').innerHTML = (u.txs||[]).length
+            ? (u.txs||[]).map(txHTML).join('')
+            : '<div class="empty"><div class="ei">📋</div><p>Chưa có giao dịch</p></div>';
+    } catch(e) {}
+}
+
+// ── TRANSFER ──
+function refreshTransfer() {
+    ['t-email','t-amt','t-note'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('rbox').classList.remove('on');
+}
+
+async function lookupRcpt(email) {
+    const e = email.toLowerCase().trim();
+    const box = document.getElementById('rbox');
+    if (!e.includes('@')) { box.classList.remove('on'); return; }
+    try {
+        const u = await api('GET', `/api/user/${encodeURIComponent(e)}`);
+        if (u && u.email !== me.email) {
+            document.getElementById('rn').textContent = u.name;
+            document.getElementById('rm').textContent = e;
+            box.classList.add('on');
+        } else box.classList.remove('on');
+    } catch { box.classList.remove('on'); }
+}
+
+function sa(n) { document.getElementById('t-amt').value = n; }
+
+async function doTransfer() {
+    const to     = document.getElementById('t-email').value.trim().toLowerCase();
+    const amount = parseInt(document.getElementById('t-amt').value);
+    const note   = document.getElementById('t-note').value.trim() || 'Chuyển tiền';
+    if (!to || !to.includes('@')) { toast('Email người nhận không hợp lệ', 'err'); return; }
+    if (!amount || amount < 1000) { toast('Số tiền tối thiểu 1.000 ₫', 'err'); return; }
+    const btn = document.getElementById('btn-tf');
+    btn.disabled = true;
+    try {
+        const r = await api('POST', '/api/transfer', { from: me.email, to, amount, note });
+        if (r.status === 'pending') {
+            pendTxId = r.txId;
+            openPending(amount, to);
+        } else {
+            refreshTransfer();
+            setTimeout(() => go('home'), 1400);
+        }
+    } catch(e) { toast(e.message, 'err'); }
+    finally { btn.disabled = false; }
+}
+
+// ── MONITOR ──
+async function refreshMonitor() {
+    try {
+        monList = await api('GET', `/api/monitor/${me.email}`);
+        renderMonList();
+    } catch(e) {}
+}
+
+async function addMonitor() {
+    const email  = document.getElementById('m-email').value.trim().toLowerCase();
+    const thresh = parseInt(document.getElementById('m-thresh').value);
+    if (!email || !email.includes('@')) { toast('Email không hợp lệ', 'err'); return; }
+    if (!thresh || thresh < 1000)        { toast('Ngưỡng tối thiểu 1.000 ₫', 'err'); return; }
+    try {
+        await api('POST', '/api/monitor', { adminEmail: me.email, watchEmail: email, threshold: thresh });
+        document.getElementById('m-email').value  = '';
+        document.getElementById('m-thresh').value = '';
+        await refreshMonitor();
+        toast('✓ Đã thêm giám sát', 'ok');
+    } catch(e) { toast(e.message, 'err'); }
+}
+
+async function removeMonitor(email) {
+    await api('DELETE', `/api/monitor/${me.email}/${encodeURIComponent(email)}`);
+    await refreshMonitor();
+    toast('Đã xoá khỏi danh sách');
+}
+
+function renderMonList() {
+    const el = document.getElementById('m-list');
+    if (!monList.length) {
+        el.innerHTML = '<div class="empty"><div class="ei">👀</div><p>Chưa có Gmail nào được giám sát</p></div>';
+        return;
+    }
+    el.innerHTML = monList.map(m => `
+        <div class="mitem">
+            <div class="mava">👤</div>
+            <div class="minf">
+                <div class="mn">${m.name}</div>
+                <div class="me2">${m.email}</div>
+                <div class="mt2">Ngưỡng: ${fmt(m.threshold)} ₫</div>
+            </div>
+            <button class="delbtn" onclick="removeMonitor('${m.email}')">🗑</button>
+        </div>
+    `).join('');
+}
+
+// ── APPROVAL MODAL ──
+function openApproval(data) {
+    document.getElementById('ap-from').textContent = `${data.fromName} (${data.from})`;
+    document.getElementById('ap-to').textContent   = `${data.toName} (${data.to})`;
+    document.getElementById('ap-amt').textContent  = fmt(data.amount) + ' ₫';
+    document.getElementById('ap-note').textContent = data.note || '—';
+    document.getElementById('ov-approval').classList.add('on');
+    timeLeft = data.timeLeft ?? 600;
+    tickApproval();
+    clearInterval(timerID);
+    timerID = setInterval(() => {
+        timeLeft--;
+        tickApproval();
+        if (timeLeft <= 60) document.getElementById('timering').classList.add('urg');
+        if (timeLeft <= 0)  { clearInterval(timerID); closeApproval(); }
+    }, 1000);
+}
+
+function tickApproval() {
+    const m = String(Math.floor(timeLeft/60)).padStart(2,'0');
+    const s = String(timeLeft % 60).padStart(2,'0');
+    document.getElementById('timen').textContent = m + ':' + s;
+}
+
+function closeApproval() {
+    clearInterval(timerID);
+    document.getElementById('ov-approval').classList.remove('on');
+    document.getElementById('timering').classList.remove('urg');
+    curApproval = null;
+}
+
+async function approveTx() {
+    if (!curApproval) return;
+    const snap = { ...curApproval };
+    try {
+        await api('POST', `/api/approve/${snap.txId}`, { adminEmail: me.email });
+        closeApproval();
+        toast('✓ Đã duyệt giao dịch', 'ok');
+        addNotif('✓ Đã duyệt', `${snap.fromName} chuyển ${fmt(snap.amount)} ₫ — đã được duyệt`);
+        await refreshHome();
+    } catch(e) { toast(e.message, 'err'); }
+}
+
+async function rejectTx() {
+    if (!curApproval) return;
+    const snap = { ...curApproval };
+    try {
+        await api('POST', `/api/reject/${snap.txId}`, { adminEmail: me.email });
+        closeApproval();
+        toast('Đã từ chối giao dịch');
+        addNotif('✕ Đã từ chối', `Giao dịch ${fmt(snap.amount)} ₫ của ${snap.fromName} bị từ chối`);
+    } catch(e) { toast(e.message, 'err'); }
+}
+
+// ── PENDING MODAL ──
+function openPending(amount, toEmail) {
+    document.getElementById('p-amt').textContent = fmt(amount) + ' ₫';
+    document.getElementById('p-to').textContent  = '→ ' + toEmail;
+    document.getElementById('ov-pending').classList.add('on');
+    pendTimeLeft = 600;
+    tickPending();
+    clearInterval(pendTimerID);
+    pendTimerID = setInterval(() => {
+        pendTimeLeft--;
+        tickPending();
+        if (pendTimeLeft <= 0) { clearInterval(pendTimerID); closePending(); }
+    }, 1000);
+}
+
+function tickPending() {
+    const m = String(Math.floor(pendTimeLeft/60)).padStart(2,'0');
+    const s = String(pendTimeLeft % 60).padStart(2,'0');
+    document.getElementById('p-timer').textContent = `⏳ Còn ${m}:${s}`;
+}
+
+function closePending() {
+    clearInterval(pendTimerID);
+    document.getElementById('ov-pending').classList.remove('on');
+    pendTxId = null;
+    refreshTransfer();
+}
+
+function cancelPending() { closePending(); toast('Đã huỷ giao dịch'); }
+
+// ── NOTIFICATIONS ──
+function addNotif(title, desc) {
+    const now = new Date();
+    notifs.unshift({ title, desc, t: now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0') });
+    updateBadge();
+    renderNotifs();
+}
+
+function updateBadge() {
+    const b = document.getElementById('nbadge');
+    if (notifs.length) { b.classList.add('on'); b.textContent = Math.min(notifs.length, 9); }
+    else b.classList.remove('on');
+}
+
+function renderNotifs() {
+    document.getElementById('np-list').innerHTML = notifs.length
+        ? notifs.map(n => `<div class="npitem"><div class="npn">${n.title}</div><div class="npd">${n.desc}</div><div class="npt">${n.t}</div></div>`).join('')
+        : '<div class="empty"><div class="ei">🔔</div><p>Không có thông báo</p></div>';
+}
+
+function openNP()  { document.getElementById('npanel').classList.add('on'); }
+function closeNP() { document.getElementById('npanel').classList.remove('on'); }
+
+// ── API ──
+async function api(method, url, body) {
+    const opts = { method, headers: { 'Content-Type': 'application/json' } };
+    if (body) opts.body = JSON.stringify(body);
+    const r = await fetch(url, opts);
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Lỗi server');
+    return data;
+}
+
+// ── TOAST ──
+let _tt;
+function toast(msg, type = '') {
+    const el = document.getElementById('toast-el');
+    el.textContent = msg;
+    el.className = 'toast on ' + (type==='ok'?'ok':type==='err'?'err':'');
+    clearTimeout(_tt);
+    _tt = setTimeout(() => el.classList.remove('on'), 3200);
+}
+
+function fmt(n) { return Number(n).toLocaleString('vi-VN'); }
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !document.getElementById('s-login').classList.contains('hide')) doLogin();
+    if (e.key === 'Escape') { closeNP(); closeApproval(); closePending(); }
+});
+
+show('login');
+</script>
+</body>
+</html>
