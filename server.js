@@ -12,13 +12,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ─── IN-MEMORY STORE ───
 const users = {
-    'huy@gmail.com':   { name: 'TRAN QUOC HUY',   balance: 50000000, stk: '1234 5678 901', txs: [] },
-    'alice@gmail.com': { name: 'NGUYEN THI ALICE', balance: 30000000, stk: '9876 5432 100', txs: [] },
-    'bob@gmail.com':   { name: 'LE VAN BOB',       balance: 20000000, stk: '5555 6666 777', txs: [] },
+    'pva@gmail.com': { name: 'PHẠM VIỆT ANH',   password: '123456', balance: 50000000, stk: '1234123412', txs: [] },
+    'tma@gmail.com': { name: 'TRƯƠNG MINH ANH', password: '234567', balance: 30000000, stk: '2345234523', txs: [] },
+    'pqa@gmail.com': { name: 'PHÙNG QUỲNH ANH', password: '345678', balance: 20000000, stk: '3456345634', txs: [] },
 };
 
-// { adminEmail: [{ email, name, threshold }] }
-const monitorRules = {};
+// { adminEmail: [{ email, name, stk, threshold }] }
+const monitorRules = {
+    'pva@gmail.com': [
+        { email: 'tma@gmail.com', name: 'TRƯƠNG MINH ANH', stk: '2345234523', threshold: 1000000 },
+        { email: 'pqa@gmail.com', name: 'PHÙNG QUỲNH ANH', stk: '3456345634', threshold: 5000000 },
+    ]
+};
+
+// ─── HELPER: tìm user theo STK ───
+function findByStk(stk) {
+    return Object.entries(users).find(([, u]) => u.stk === stk);
+}
 
 // { txId: { id, from, to, amount, note, adminEmail, threshold, status, timer, expiresAt } }
 const pendingTxs = {};
@@ -78,20 +88,13 @@ io.on('connection', socket => {
 
 // ─── API ───
 
-// Login — no password, create account if new
+// Login — email + password
 app.post('/api/login', (req, res) => {
-    const { email } = req.body;
+    const { email, password } = req.body;
     if (!email || !email.includes('@')) return res.status(400).json({ error: 'Email không hợp lệ' });
-
-    if (!users[email]) {
-        users[email] = {
-            name:    email.split('@')[0].toUpperCase().replace(/[._]/g,' '),
-            balance: 10000000,
-            stk:     String(Math.floor(Math.random()*9e9 + 1e9)),
-            txs:     []
-        };
-    }
     const u = users[email];
+    if (!u) return res.status(404).json({ error: 'Tài khoản không tồn tại' });
+    if (u.password && u.password !== String(password)) return res.status(401).json({ error: 'Mật khẩu không đúng' });
     res.json({ email, name: u.name, balance: u.balance, stk: u.stk });
 });
 
@@ -103,13 +106,24 @@ app.get('/api/user/:email', (req, res) => {
     res.json({ email, ...u });
 });
 
-// Transfer
+// Lookup STK
+app.get('/api/lookup-stk/:stk', (req, res) => {
+    const entry = findByStk(req.params.stk);
+    if (!entry) return res.status(404).json({ error: 'Số tài khoản không tồn tại' });
+    const [email, u] = entry;
+    res.json({ email, name: u.name, stk: u.stk });
+});
+
+// Transfer — nhận toStk thay vì email
 app.post('/api/transfer', (req, res) => {
-    const { from, to, amount, note } = req.body;
+    const { from, toStk, amount, note } = req.body;
     const amt = parseInt(amount);
 
+    const toEntry = findByStk(toStk);
+    const to = toEntry?.[0];
+
     if (!users[from])          return res.status(404).json({ error: 'Người gửi không tồn tại' });
-    if (!users[to])            return res.status(404).json({ error: 'Người nhận không tồn tại' });
+    if (!to)                   return res.status(404).json({ error: 'Số tài khoản người nhận không tồn tại' });
     if (from === to)           return res.status(400).json({ error: 'Không thể tự chuyển cho mình' });
     if (!amt || amt < 1000)    return res.status(400).json({ error: 'Số tiền tối thiểu 1.000 ₫' });
     if (users[from].balance < amt) return res.status(400).json({ error: 'Số dư không đủ' });
@@ -118,8 +132,11 @@ app.post('/api/transfer', (req, res) => {
     for (const [adminEmail, rules] of Object.entries(monitorRules)) {
         const rule = rules.find(r => r.email === from);
         if (rule && amt > rule.threshold) {
-            const id  = txId();
-            const exp = Date.now() + 600_000; // 10 phút
+            const id = txId();
+
+            const PHASE1 = 180_000; // 3 phút admin duyệt
+            const PHASE2 = 420_000; // 7 phút tự động thực hiện
+            const exp = Date.now() + PHASE1;
 
             const tx = {
                 id, from, to, amount: amt,
@@ -128,25 +145,36 @@ app.post('/api/transfer', (req, res) => {
                 status: 'pending', expiresAt: exp,
             };
 
+            // Phase 1: hết 3 phút → chuyển sang phase 2
             tx.timer = setTimeout(() => {
-                if (pendingTxs[id]?.status === 'pending') {
-                    pendingTxs[id].status = 'expired';
+                const t = pendingTxs[id];
+                if (!t || t.status !== 'pending') return;
+                t.status = 'auto_pending';
+
+                // Đóng modal admin, thông báo cho sender đếm ngược 7 phút
+                notifySocket(adminEmail, 'transaction_expired', { txId: id, from, amount: amt });
+                notifySocket(from, 'transaction_auto_pending', { txId: id, amount: amt, autoIn: 420 });
+
+                // Phase 2: hết 7 phút → tự động thực hiện giao dịch
+                t.autoTimer = setTimeout(() => {
+                    if (pendingTxs[id]?.status !== 'auto_pending') return;
                     delete pendingTxs[id];
-                    notifySocket(adminEmail, 'transaction_expired', { txId: id, from, amount: amt });
-                    notifySocket(from,       'transaction_expired', { txId: id, amount: amt });
-                }
-            }, 600_000);
+                    execTransfer(from, to, amt, tx.note);
+                    notifySocket(from, 'transfer_done',     { amount: amt, toName: users[to].name,   balance: users[from].balance });
+                    notifySocket(to,   'transfer_received', { amount: amt, fromName: users[from].name, balance: users[to].balance });
+                }, PHASE2);
+            }, PHASE1);
 
             pendingTxs[id] = tx;
 
             notifySocket(adminEmail, 'pending_transaction', {
                 txId: id,
-                from,      fromName:  users[from].name,
-                to,        toName:    users[to].name,
+                from,      fromName:  users[from].name,  fromStk: users[from].stk,
+                to,        toName:    users[to].name,    toStk:   users[to].stk,
                 amount:    amt,
                 note:      tx.note,
                 threshold: rule.threshold,
-                timeLeft:  600,
+                timeLeft:  180,
             });
 
             return res.json({ status: 'pending', txId: id });
@@ -168,6 +196,7 @@ app.post('/api/approve/:id', (req, res) => {
     if (tx.adminEmail !== req.body.adminEmail) return res.status(403).json({ error: 'Không có quyền' });
 
     clearTimeout(tx.timer);
+    clearTimeout(tx.autoTimer);
     delete pendingTxs[req.params.id];
 
     execTransfer(tx.from, tx.to, tx.amount, tx.note);
@@ -186,6 +215,7 @@ app.post('/api/reject/:id', (req, res) => {
     if (tx.adminEmail !== req.body.adminEmail) return res.status(403).json({ error: 'Không có quyền' });
 
     clearTimeout(tx.timer);
+    clearTimeout(tx.autoTimer);
     delete pendingTxs[req.params.id];
 
     notifySocket(tx.from, 'transfer_rejected', { amount: tx.amount });
@@ -193,9 +223,25 @@ app.post('/api/reject/:id', (req, res) => {
     res.json({ status: 'rejected' });
 });
 
-// Get monitor list
+// Get monitor list (accounts I'm watching)
 app.get('/api/monitor/:adminEmail', (req, res) => {
     res.json(monitorRules[req.params.adminEmail] || []);
+});
+
+// Get who is watching me
+app.get('/api/monitored-by/:email', (req, res) => {
+    const email = req.params.email;
+    const result = [];
+    for (const [adminEmail, rules] of Object.entries(monitorRules)) {
+        const rule = rules.find(r => r.email === email);
+        if (rule) result.push({
+            email:     adminEmail,
+            name:      users[adminEmail]?.name || adminEmail,
+            stk:       users[adminEmail]?.stk || '',
+            threshold: rule.threshold,
+        });
+    }
+    res.json(result);
 });
 
 // Add monitor

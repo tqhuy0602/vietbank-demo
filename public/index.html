@@ -25,9 +25,12 @@
         /* ── LOGIN ── */
         #s-login { display:flex; flex-direction:column; min-height:100vh; }
         .lhdr { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--border); }
-        .logo-wrap { display:flex; align-items:center; gap:9px; }
-        .logo-box { width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,#cc0000,#880000); display:flex; align-items:center; justify-content:center; color:white; font-weight:900; font-size:17px; }
-        .logo-name { font-size:20px; font-weight:800; color:var(--red); }
+        .logo-wrap { display:flex; align-items:center; gap:10px; }
+        .logo-box { width:42px; height:42px; border-radius:50%; background:linear-gradient(145deg,#e8001e,#8b0000); display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(204,0,0,.4); flex-shrink:0; }
+        .logo-box svg { width:26px; height:26px; }
+        .logo-text { display:flex; flex-direction:column; line-height:1; }
+        .logo-name { font-size:18px; font-weight:900; background:linear-gradient(135deg,#cc0000,#880000); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; letter-spacing:.5px; }
+        .logo-sub { font-size:9px; font-weight:600; color:#aaa; letter-spacing:1.5px; text-transform:uppercase; margin-top:1px; }
         .lbody { flex:1; display:flex; flex-direction:column; align-items:center; padding:36px 24px 20px; }
         .ava { width:84px; height:84px; border-radius:50%; background:linear-gradient(135deg,#ffe0e0,#ffb3b3); display:flex; align-items:center; justify-content:center; margin-bottom:20px; box-shadow:0 4px 16px rgba(204,0,0,.15); }
         .ava svg { width:46px; height:46px; fill:var(--red); opacity:.7; }
@@ -46,26 +49,46 @@
 
         /* ── HOME ── */
         #s-home { background:var(--gray); min-height:100vh; }
-        .hhdr { background:linear-gradient(140deg,#cc0000,#880000); padding:22px 20px 44px; color:white; }
-        .hhdr-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
-        .greet-s { font-size:13px; opacity:.82; margin-bottom:2px; }
-        .greet-n { font-size:19px; font-weight:800; }
-        .nbell { width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:19px; position:relative; }
+        .hhdr { background:linear-gradient(150deg,#cc0000 0%,#8b0000 100%); padding:20px 18px 44px; color:white; }
+        .hhdr-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:0; }
+        .hhdr-user { display:flex; align-items:center; gap:12px; }
+        .h-avatar { width:52px; height:52px; border-radius:50%; background:rgba(255,255,255,.25); border:2.5px solid rgba(255,255,255,.5); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; color:white; flex-shrink:0; text-transform:uppercase; }
+        .h-info { display:flex; flex-direction:column; }
+        .greet-s { font-size:11.5px; opacity:.75; margin-bottom:2px; letter-spacing:.3px; }
+        .greet-n { font-size:17px; font-weight:800; letter-spacing:.2px; }
+        .h-stk-row { display:flex; align-items:center; gap:5px; margin-top:4px; }
+        .h-stk-txt { font-size:11.5px; opacity:.8; letter-spacing:.3px; }
+        .h-copy { background:none; border:none; color:rgba(255,255,255,.7); font-size:12px; cursor:pointer; padding:0; }
+        .h-tier { display:inline-flex; align-items:center; gap:4px; background:linear-gradient(135deg,#ffd700,#e6a800); color:#5a3a00; font-size:10.5px; font-weight:800; padding:3px 10px; border-radius:20px; margin-top:5px; width:fit-content; letter-spacing:.3px; }
+        .nbell { width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:19px; position:relative; flex-shrink:0; }
         .nbadge { position:absolute; top:-3px; right:-3px; width:18px; height:18px; background:#ff4444; border-radius:50%; font-size:10px; font-weight:700; display:none; align-items:center; justify-content:center; border:2px solid #880000; color:white; }
         .nbadge.on { display:flex; }
+
+        /* ── MONITOR BUTTON (header right) ── */
+        .fab-monitor { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.22); border:1.5px solid rgba(255,255,255,.4); color:white; cursor:pointer; transition:transform .15s,background .15s; flex-shrink:0; }
+        .fab-monitor:hover { background:rgba(255,255,255,.32); transform:scale(1.07); }
+        .fab-monitor:active { transform:scale(.93); }
+        .fab-monitor .fab-ico { font-size:16px; line-height:1; }
+        .fab-monitor .fab-lbl { font-size:7px; font-weight:800; letter-spacing:.3px; opacity:.85; }
         .balcard { background:white; border-radius:20px; padding:22px; margin:-24px 16px 0; box-shadow:0 6px 24px rgba(0,0,0,.11); }
         .bal-lbl { font-size:12px; color:var(--txt2); margin-bottom:6px; }
         .bal-row { display:flex; align-items:flex-end; gap:6px; }
         .bal-n { font-size:30px; font-weight:900; color:var(--txt); }
         .bal-c { font-size:17px; font-weight:700; color:var(--red); padding-bottom:2px; }
         .bal-s { font-size:12px; color:var(--txt2); margin-top:6px; }
-        .agrid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:18px 16px; }
-        .abt { background:white; border-radius:16px; padding:14px 8px; display:flex; flex-direction:column; align-items:center; gap:7px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.06); transition:transform .15s,box-shadow .15s; border:none; }
-        .abt:hover { transform:translateY(-2px); box-shadow:0 5px 18px rgba(0,0,0,.1); }
-        .abt:active { transform:scale(.95); }
-        .aico { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; }
-        .r{background:#fff0f0}.b{background:#eef3ff}.o{background:#fff6e8}.g{background:#e8f8ef}.p{background:#f3eeff}
-        .albl { font-size:11.5px; font-weight:600; color:var(--txt); text-align:center; }
+        .agrid { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; margin:18px 12px; }
+        .abt { background:none; border:none; padding:14px 6px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; transition:transform .15s; border-radius:16px; }
+        .abt:hover { transform:translateY(-2px); }
+        .abt:active { transform:scale(.92); }
+        .aico { width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,.15); flex-shrink:0; }
+        .aico svg { width:26px; height:26px; }
+        .ic-red  { background:linear-gradient(145deg,#e8001e,#aa0010); }
+        .ic-blue { background:linear-gradient(145deg,#1565c0,#0d47a1); }
+        .ic-green{ background:linear-gradient(145deg,#1a9e5c,#0d7a44); }
+        .ic-orange{background:linear-gradient(145deg,#e07800,#b85e00); }
+        .ic-purple{background:linear-gradient(145deg,#7b3fc4,#5a2ea0); }
+        .ic-gray { background:linear-gradient(145deg,#78909c,#546e7a); }
+        .albl { font-size:11.5px; font-weight:600; color:var(--txt); text-align:center; line-height:1.3; }
         .stitle { font-size:15px; font-weight:700; color:var(--txt); padding:0 16px; margin-bottom:10px; }
         .txlist { margin:0 16px 24px; }
         .txi { background:white; border-radius:14px; padding:13px 14px; display:flex; align-items:center; gap:11px; margin-bottom:7px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
@@ -184,6 +207,21 @@
         .empty p { font-size:14px; color:var(--txt2); }
         ::-webkit-scrollbar { width:3px; }
         ::-webkit-scrollbar-thumb { background:#ddd; border-radius:2px; }
+
+        /* ── BOTTOM TAB BAR ── */
+        .tabbar { position:absolute; bottom:0; left:0; right:0; height:68px; background:white; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-around; z-index:60; padding:0 4px 8px; box-shadow:0 -2px 12px rgba(0,0,0,.08); }
+        .tabbar.hide { display:none; }
+        .tabb { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; background:none; border:none; cursor:pointer; padding:6px 2px; position:relative; transition:opacity .15s; }
+        .tabb:active { opacity:.6; }
+        .tabb svg { width:22px; height:22px; }
+        .tabb-lbl { font-size:10px; font-weight:600; color:#9e9e9e; white-space:nowrap; }
+        .tabb.active .tabb-lbl { color:var(--red); }
+        .tabb.active svg { stroke:var(--red); }
+        .tabb-badge { position:absolute; top:2px; right:calc(50% - 18px); background:var(--red); color:white; font-size:9px; font-weight:800; min-width:16px; height:16px; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 3px; }
+        .tabb-qr { flex:0 0 56px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:3px; background:none; border:none; cursor:pointer; padding:0 2px 0; margin-top:-18px; }
+        .tabb-qr .qr-circle { width:56px; height:56px; border-radius:50%; background:linear-gradient(145deg,#e8001e,#aa0010); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px rgba(204,0,0,.4); border:3px solid white; }
+        .tabb-qr .qr-circle svg { width:26px; height:26px; }
+        .tabb-qr .tabb-lbl { font-size:10px; font-weight:600; color:#9e9e9e; }
     </style>
 </head>
 <body>
@@ -194,8 +232,17 @@
         <div class="lhdr">
             <button style="font-size:20px;cursor:pointer;color:#666;background:none;border:none" onclick="toast('Demo app 😊')">✕</button>
             <div class="logo-wrap">
-                <div class="logo-box">V</div>
-                <span class="logo-name">VIETBANK</span>
+                <div class="logo-box">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L3 6v2h18V6L12 2z" fill="white"/>
+                        <path d="M5 10v7h2v-7H5zm4 0v7h2v-7H9zm4 0v7h2v-7h-2zm4 0v7h2v-7h-2z" fill="white"/>
+                        <path d="M3 19h18v2H3v-2z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-name">VIETBANK</span>
+                    <span class="logo-sub">Digital Banking</span>
+                </div>
             </div>
             <span style="font-size:22px">🇻🇳</span>
         </div>
@@ -204,16 +251,23 @@
                 <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
             </div>
             <div class="iw">
-                <input id="l-email" type="email" placeholder="Nhập Gmail của bạn" autocomplete="email">
+                <input id="l-email" type="email" placeholder="Nhập email của bạn" autocomplete="email">
+            </div>
+            <div class="iw" style="position:relative">
+                <input id="l-pass" type="password" placeholder="Mật khẩu (6 chữ số)" autocomplete="current-password" maxlength="6" inputmode="numeric">
+                <button onclick="togglePass()" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#aaa" id="eye-btn">👁</button>
             </div>
             <div class="hint">
-                💡 <b>Đăng nhập bằng Gmail — không cần mật khẩu</b><br>
-                Tài khoản demo có sẵn:<br>
-                • <b>huy@gmail.com</b> — 50 triệu ₫<br>
-                • <b>alice@gmail.com</b> — 30 triệu ₫<br>
-                • <b>bob@gmail.com</b> — 20 triệu ₫
+                💡 <b>Tài khoản demo:</b><br>
+                • <b>pva@gmail.com</b> — mật khẩu: <b>123456</b><br>
+                • <b>tma@gmail.com</b> — mật khẩu: <b>234567</b><br>
+                • <b>pqa@gmail.com</b> — mật khẩu: <b>345678</b>
             </div>
-            <button class="btn" onclick="doLogin()">Đăng nhập →</button>
+            <div style="display:flex;gap:10px;width:100%">
+                <button class="btn" onclick="doLogin()" style="flex:1">Đăng nhập →</button>
+                <button onclick="toast('Face ID sắp ra mắt')" style="width:52px;height:52px;flex-shrink:0;border:1.5px solid var(--border);border-radius:13px;background:white;cursor:pointer;font-size:22px">🪪</button>
+            </div>
+            <button onclick="toast('Vui lòng liên hệ hỗ trợ')" style="background:none;border:none;color:var(--red);font-size:13px;font-weight:600;cursor:pointer;margin-top:8px">Quên mật khẩu?</button>
         </div>
         <div class="lfooter">
             <div class="fbt"><span>📤</span><span>Chia sẻ</span></div>
@@ -226,11 +280,25 @@
     <div id="s-home" class="sc hide">
         <div class="hhdr">
             <div class="hhdr-top">
-                <div>
-                    <div class="greet-s">Xin chào 👋</div>
-                    <div class="greet-n" id="h-name">—</div>
+                <div class="hhdr-user">
+                    <div class="h-avatar" id="h-avatar">—</div>
+                    <div class="h-info">
+                        <div class="greet-s">Xin chào 👋</div>
+                        <div class="greet-n" id="h-name">—</div>
+                        <div class="h-stk-row">
+                            <span class="h-stk-txt" id="h-stk-masked">STK: —</span>
+                            <button class="h-copy" onclick="copyStk()" title="Sao chép STK">⧉</button>
+                        </div>
+                        <div class="h-tier">★ Hạng Vàng</div>
+                    </div>
                 </div>
-                <div class="nbell" onclick="openNP()">🔔<div class="nbadge" id="nbadge">0</div></div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+                    <div class="nbell" onclick="openNP()">🔔<div class="nbadge" id="nbadge">0</div></div>
+                    <button id="fab-monitor" class="fab-monitor hide" onclick="go('monitor')" title="Giám sát">
+                        <span class="fab-ico">🔍</span>
+                        <span class="fab-lbl">GIÁM SÁT</span>
+                    </button>
+                </div>
             </div>
         </div>
         <div class="balcard">
@@ -240,15 +308,106 @@
         </div>
         <div style="height:18px"></div>
         <div class="agrid">
-            <button class="abt" onclick="go('account')"><div class="aico r">💳</div><span class="albl">Tài khoản</span></button>
-            <button class="abt" onclick="go('transfer')"><div class="aico b">💸</div><span class="albl">Chuyển tiền</span></button>
-            <button class="abt" onclick="go('monitor')"><div class="aico o">🔍</div><span class="albl">Giám sát</span></button>
-            <button class="abt" onclick="toast('Sắp ra mắt')"><div class="aico g">📊</div><span class="albl">Thống kê</span></button>
-            <button class="abt" onclick="toast('Sắp ra mắt')"><div class="aico p">💰</div><span class="albl">Tiết kiệm</span></button>
-            <button class="abt" onclick="doLogout()"><div class="aico r">🚪</div><span class="albl">Đăng xuất</span></button>
+            <button class="abt" onclick="go('account')">
+                <div class="aico ic-red">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/>
+                    </svg>
+                </div>
+                <span class="albl">Tài khoản</span>
+            </button>
+            <button class="abt" onclick="go('transfer')">
+                <div class="aico ic-red">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M15 7l5 5-5 5"/><path d="M19 12H5M9 17l-5-5 5-5" opacity=".5"/>
+                    </svg>
+                </div>
+                <span class="albl">Chuyển tiền</span>
+            </button>
+            <button class="abt" onclick="toast('Sắp ra mắt')">
+                <div class="aico ic-blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+                        <line x1="3" y1="20" x2="21" y2="20"/>
+                    </svg>
+                </div>
+                <span class="albl">Thống kê</span>
+            </button>
+            <button class="abt" onclick="toast('Sắp ra mắt')">
+                <div class="aico ic-green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a5 5 0 015 5c0 1.5-.6 2.8-1.5 3.8L17 22H7l1.5-11.2A5 5 0 0112 2z"/>
+                        <line x1="9" y1="14" x2="15" y2="14"/>
+                    </svg>
+                </div>
+                <span class="albl">Tiết kiệm</span>
+            </button>
+            <button class="abt" onclick="toast('Sắp ra mắt')">
+                <div class="aico ic-orange">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+                        <circle cx="7" cy="7" r="1.5" fill="white" stroke="none"/>
+                    </svg>
+                </div>
+                <span class="albl">Ưu đãi</span>
+            </button>
+            <button class="abt" onclick="doLogout()">
+                <div class="aico ic-gray">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                </div>
+                <span class="albl">Đăng xuất</span>
+            </button>
         </div>
         <div class="stitle">Giao dịch gần đây</div>
-        <div class="txlist" id="h-txs"></div>
+        <div class="txlist" id="h-txs" style="padding-bottom:76px"></div>
+
+        <!-- BOTTOM TAB BAR -->
+        <div class="tabbar" id="tabbar">
+            <button class="tabb active" onclick="toast('Thông báo')">
+                <div style="position:relative;display:inline-flex">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
+                    </svg>
+                    <span class="tabb-badge">5</span>
+                </div>
+                <span class="tabb-lbl" style="color:var(--red)">Thông báo</span>
+            </button>
+
+            <button class="tabb" onclick="go('transfer')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#9e9e9e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M15 8l4 4-4 4"/><path d="M19 12H5M9 16l-4-4 4-4" opacity=".45"/>
+                </svg>
+                <span class="tabb-lbl">Chuyển tiền</span>
+            </button>
+
+            <button class="tabb-qr" onclick="toast('Sắp ra mắt')">
+                <div class="qr-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+                        <rect x="14" y="14" width="3" height="3" rx=".5" fill="white"/><rect x="18" y="14" width="3" height="3" rx=".5" fill="white"/><rect x="14" y="18" width="3" height="3" rx=".5" fill="white"/><rect x="18" y="18" width="3" height="3" rx=".5" fill="white"/>
+                        <rect x="5" y="5" width="3" height="3" rx=".5" fill="white" stroke="none"/><rect x="16" y="5" width="3" height="3" rx=".5" fill="white" stroke="none"/><rect x="5" y="16" width="3" height="3" rx=".5" fill="white" stroke="none"/>
+                    </svg>
+                </div>
+                <span class="tabb-lbl">Quét QR</span>
+            </button>
+
+            <button class="tabb" onclick="toast('Sắp ra mắt')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#9e9e9e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                </svg>
+                <span class="tabb-lbl">VNPAY Taxi</span>
+            </button>
+
+            <button class="tabb" onclick="go('account')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#9e9e9e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+                    <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+                </svg>
+                <span class="tabb-lbl">Lịch sử GD</span>
+            </button>
+        </div>
     </div>
 
     <!-- ACCOUNT -->
@@ -282,8 +441,8 @@
         <div style="background:var(--gray);min-height:calc(100vh - 56px);padding-bottom:24px">
             <div class="fcard">
                 <div class="fg">
-                    <label class="flbl">Email người nhận</label>
-                    <input class="finp" id="t-email" type="email" placeholder="email@gmail.com" oninput="lookupRcpt(this.value)">
+                    <label class="flbl">Số tài khoản người nhận</label>
+                    <input class="finp" id="t-stk" type="text" placeholder="Nhập số tài khoản" maxlength="10" inputmode="numeric" oninput="lookupRcpt(this.value)">
                     <div class="rbox" id="rbox"><div class="rn" id="rn">—</div><div class="rm" id="rm">—</div></div>
                 </div>
                 <div class="fg">
@@ -318,26 +477,20 @@
             <span class="sctitle">Giám sát giao dịch</span>
         </div>
         <div style="background:var(--gray);min-height:calc(100vh - 56px);padding-bottom:24px">
-            <div class="fcard">
-                <div class="ibanner">
-                    🔍 Nhập Gmail cần giám sát. Khi người đó chuyển tiền vượt ngưỡng, <b>bạn nhận thông báo ngay</b> để duyệt hoặc từ chối trong vòng <b>10 phút</b>.
-                </div>
-                <div class="fg">
-                    <label class="flbl">Gmail cần giám sát</label>
-                    <input class="finp" id="m-email" type="email" placeholder="email@gmail.com">
-                </div>
-                <div class="fg">
-                    <label class="flbl">Ngưỡng cảnh báo (₫)</label>
-                    <div class="amtw">
-                        <input class="finp" id="m-thresh" type="number" placeholder="1,000,000" style="padding-right:40px">
-                        <span class="amtc">₫</span>
-                    </div>
-                </div>
-                <button class="btn" onclick="addMonitor()">+ Thêm giám sát</button>
+            <div class="stitle" style="padding-top:16px">Đang giám sát</div>
+            <div class="ibanner" style="margin:0 16px 10px">
+                🔍 Các tài khoản bên dưới đang bị bạn giám sát. Khi họ chuyển tiền vượt ngưỡng, <b>bạn nhận thông báo ngay</b> để duyệt hoặc từ chối trong vòng <b>10 phút</b>.
             </div>
-            <div class="stitle">Đang giám sát</div>
             <div id="m-list" style="margin:0 16px">
-                <div class="empty"><div class="ei">👀</div><p>Chưa có Gmail nào được giám sát</p></div>
+                <div class="empty"><div class="ei">👀</div><p>Bạn chưa giám sát tài khoản nào</p></div>
+            </div>
+
+            <div class="stitle" style="margin-top:20px">Đang bị giám sát</div>
+            <div class="ibanner" style="margin:0 16px 10px;background:#f0f4ff;border-color:#c5d3f5;color:#1a3a7a">
+                🛡️ Các tài khoản bên dưới đang theo dõi hoạt động chuyển tiền của bạn.
+            </div>
+            <div id="mb-list" style="margin:0 16px">
+                <div class="empty"><div class="ei">🛡️</div><p>Không có ai đang giám sát bạn</p></div>
             </div>
         </div>
     </div>
@@ -352,7 +505,9 @@
         <div class="msub">Người được giám sát đang thực hiện chuyển tiền vượt ngưỡng. Duyệt hay từ chối?</div>
         <div class="txbox">
             <div class="tr"><span class="trl">Người gửi</span><span class="trv" id="ap-from">—</span></div>
+            <div class="tr"><span class="trl">STK gửi</span><span class="trv" id="ap-from-stk">—</span></div>
             <div class="tr"><span class="trl">Người nhận</span><span class="trv" id="ap-to">—</span></div>
+            <div class="tr"><span class="trl">STK nhận</span><span class="trv" id="ap-to-stk">—</span></div>
             <div class="tr"><span class="trl">Số tiền</span><span class="trv red" id="ap-amt">—</span></div>
             <div class="tr"><span class="trl">Nội dung</span><span class="trv" id="ap-note">—</span></div>
         </div>
@@ -371,15 +526,24 @@
 <!-- PENDING MODAL (Sender chờ) -->
 <div class="ov" id="ov-pending">
     <div class="modal">
-        <div class="spin"></div>
-        <div class="pttl">Đang chờ duyệt...</div>
-        <div class="psub">Giao dịch của bạn đang chờ admin xem xét. Tối đa <b>10 phút</b>.</div>
+        <!-- Phase 1: chờ admin duyệt -->
+        <div id="pend-phase1">
+            <div class="spin"></div>
+            <div class="pttl">Đang chờ duyệt...</div>
+            <div class="psub">Giao dịch đang chờ người giám sát xem xét. Tối đa <b>3 phút</b>.</div>
+        </div>
+        <!-- Phase 2: tự động thực hiện -->
+        <div id="pend-phase2" style="display:none">
+            <div class="mico" style="background:#e8f8ef;font-size:28px;margin-bottom:12px">⏱️</div>
+            <div class="pttl">Người giám sát không phản hồi</div>
+            <div class="psub">Agribank đang liên hệ quý khách, vui lòng chú ý điện thoại.</div>
+        </div>
         <div class="ptimew">
             <div class="pamt" id="p-amt">—</div>
             <div class="pto" id="p-to">→ —</div>
-            <div class="ptimer" id="p-timer">⏳ Còn 10:00</div>
+            <div class="ptimer" id="p-timer">⏳ Còn 03:00</div>
         </div>
-        <button class="bcancel" onclick="cancelPending()">Huỷ giao dịch</button>
+        <button class="bcancel" id="p-cancel-btn" onclick="cancelPending()">Huỷ giao dịch</button>
     </div>
 </div>
 
@@ -437,10 +601,17 @@ socket.on('transfer_rejected', data => {
 });
 
 socket.on('transaction_expired', data => {
-    if (pendTxId === data.txId) closePending();
+    // Phase 1 hết hạn phía admin → đóng modal admin
     if (curApproval?.txId === data.txId) closeApproval();
-    toast('⏰ Giao dịch tự động huỷ do hết thời gian', 'err');
-    addNotif('⏰ Hết hạn duyệt', `Giao dịch ${fmt(data.amount)} ₫ đã tự động huỷ`);
+    // Phía sender KHÔNG đóng — server sẽ gửi transaction_auto_pending
+});
+
+socket.on('transaction_auto_pending', data => {
+    // Phase 2: admin không phản hồi, bắt đầu đếm ngược tự động thực hiện
+    if (pendTxId === data.txId) {
+        startAutoPhase(data.autoIn);
+        addNotif('⏱️ Tự động xử lý', `Người giám sát không phản hồi — giao dịch ${fmt(data.amount)} ₫ sẽ tự thực hiện sau 7 phút`);
+    }
 });
 
 // ── NAVIGATION ──
@@ -449,6 +620,9 @@ function show(id) {
     const el = document.getElementById('s-' + id);
     el.classList.remove('hide');
     el.scrollTop = 0;
+    const fab = document.getElementById('fab-monitor');
+    if (id === 'home') fab.classList.remove('hide');
+    else fab.classList.add('hide');
 }
 
 async function go(id) {
@@ -460,21 +634,29 @@ async function go(id) {
 }
 
 // ── LOGIN ──
+function togglePass() {
+    const inp = document.getElementById('l-pass');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
 async function doLogin() {
-    const email = document.getElementById('l-email').value.trim().toLowerCase();
+    const email    = document.getElementById('l-email').value.trim().toLowerCase();
+    const password = document.getElementById('l-pass').value.trim();
     if (!email || !email.includes('@')) { toast('Nhập email hợp lệ', 'err'); return; }
+    if (!password) { toast('Nhập mật khẩu', 'err'); return; }
     try {
-        const r = await api('POST', '/api/login', { email });
+        const r = await api('POST', '/api/login', { email, password });
         me = r;
         socket.emit('register', email);
         await go('home');
-        toast(`Xin chào, ${r.name}! 🎉`, 'ok');
+        toast(`Xin chào, ${r.name}!`, 'ok');
     } catch(e) { toast(e.message, 'err'); }
 }
 
 function doLogout() {
     me = null; monList = []; notifs = [];
     document.getElementById('l-email').value = '';
+    document.getElementById('l-pass').value  = '';
     show('login');
     toast('Đã đăng xuất');
 }
@@ -498,6 +680,14 @@ async function refreshHome() {
 function refreshBalance() {
     document.getElementById('h-bal').textContent = fmt(me.balance);
     document.getElementById('h-stk').textContent = 'STK: ' + me.stk;
+    const stk = me.stk || '';
+    const masked = stk.length > 6 ? stk.slice(0,6) + ' *****' + stk.slice(-3) : stk;
+    document.getElementById('h-stk-masked').textContent = 'STK: ' + masked;
+    document.getElementById('h-avatar').textContent = (me.name || '?')[0].toUpperCase();
+}
+
+function copyStk() {
+    navigator.clipboard?.writeText(me.stk).then(() => toast('Đã sao chép STK', 'ok'));
 }
 
 function txHTML(t) {
@@ -529,19 +719,19 @@ async function refreshAccount() {
 
 // ── TRANSFER ──
 function refreshTransfer() {
-    ['t-email','t-amt','t-note'].forEach(id => document.getElementById(id).value = '');
+    ['t-stk','t-amt','t-note'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('rbox').classList.remove('on');
 }
 
-async function lookupRcpt(email) {
-    const e = email.toLowerCase().trim();
+async function lookupRcpt(stk) {
+    const s = stk.trim();
     const box = document.getElementById('rbox');
-    if (!e.includes('@')) { box.classList.remove('on'); return; }
+    if (s.length < 6) { box.classList.remove('on'); return; }
     try {
-        const u = await api('GET', `/api/user/${encodeURIComponent(e)}`);
-        if (u && u.email !== me.email) {
+        const u = await api('GET', `/api/lookup-stk/${encodeURIComponent(s)}`);
+        if (u && u.stk !== me.stk) {
             document.getElementById('rn').textContent = u.name;
-            document.getElementById('rm').textContent = e;
+            document.getElementById('rm').textContent = 'STK: ' + u.stk;
             box.classList.add('on');
         } else box.classList.remove('on');
     } catch { box.classList.remove('on'); }
@@ -550,18 +740,18 @@ async function lookupRcpt(email) {
 function sa(n) { document.getElementById('t-amt').value = n; }
 
 async function doTransfer() {
-    const to     = document.getElementById('t-email').value.trim().toLowerCase();
+    const toStk  = document.getElementById('t-stk').value.trim();
     const amount = parseInt(document.getElementById('t-amt').value);
     const note   = document.getElementById('t-note').value.trim() || 'Chuyển tiền';
-    if (!to || !to.includes('@')) { toast('Email người nhận không hợp lệ', 'err'); return; }
-    if (!amount || amount < 1000) { toast('Số tiền tối thiểu 1.000 ₫', 'err'); return; }
+    if (!toStk || toStk.length < 6) { toast('Số tài khoản không hợp lệ', 'err'); return; }
+    if (!amount || amount < 1000)   { toast('Số tiền tối thiểu 1.000 ₫', 'err'); return; }
     const btn = document.getElementById('btn-tf');
     btn.disabled = true;
     try {
-        const r = await api('POST', '/api/transfer', { from: me.email, to, amount, note });
+        const r = await api('POST', '/api/transfer', { from: me.email, toStk, amount, note });
         if (r.status === 'pending') {
             pendTxId = r.txId;
-            openPending(amount, to);
+            openPending(amount, toStk);
         } else {
             refreshTransfer();
             setTimeout(() => go('home'), 1400);
@@ -573,64 +763,68 @@ async function doTransfer() {
 // ── MONITOR ──
 async function refreshMonitor() {
     try {
-        monList = await api('GET', `/api/monitor/${me.email}`);
+        const [watching, watchedBy] = await Promise.all([
+            api('GET', `/api/monitor/${me.email}`),
+            api('GET', `/api/monitored-by/${me.email}`),
+        ]);
+        monList = watching;
         renderMonList();
+        renderMonitoredByList(watchedBy);
     } catch(e) {}
-}
-
-async function addMonitor() {
-    const email  = document.getElementById('m-email').value.trim().toLowerCase();
-    const thresh = parseInt(document.getElementById('m-thresh').value);
-    if (!email || !email.includes('@')) { toast('Email không hợp lệ', 'err'); return; }
-    if (!thresh || thresh < 1000)        { toast('Ngưỡng tối thiểu 1.000 ₫', 'err'); return; }
-    try {
-        await api('POST', '/api/monitor', { adminEmail: me.email, watchEmail: email, threshold: thresh });
-        document.getElementById('m-email').value  = '';
-        document.getElementById('m-thresh').value = '';
-        await refreshMonitor();
-        toast('✓ Đã thêm giám sát', 'ok');
-    } catch(e) { toast(e.message, 'err'); }
-}
-
-async function removeMonitor(email) {
-    await api('DELETE', `/api/monitor/${me.email}/${encodeURIComponent(email)}`);
-    await refreshMonitor();
-    toast('Đã xoá khỏi danh sách');
 }
 
 function renderMonList() {
     const el = document.getElementById('m-list');
     if (!monList.length) {
-        el.innerHTML = '<div class="empty"><div class="ei">👀</div><p>Chưa có Gmail nào được giám sát</p></div>';
+        el.innerHTML = '<div class="empty"><div class="ei">👀</div><p>Bạn chưa giám sát tài khoản nào</p></div>';
         return;
     }
     el.innerHTML = monList.map(m => `
         <div class="mitem">
-            <div class="mava">👤</div>
+            <div class="mava" style="background:#fff0f0">👤</div>
             <div class="minf">
                 <div class="mn">${m.name}</div>
-                <div class="me2">${m.email}</div>
-                <div class="mt2">Ngưỡng: ${fmt(m.threshold)} ₫</div>
+                <div class="me2">STK: ${m.stk}</div>
+                <div class="mt2">🔔 Ngưỡng cảnh báo: ${fmt(m.threshold)} ₫</div>
             </div>
-            <button class="delbtn" onclick="removeMonitor('${m.email}')">🗑</button>
+        </div>
+    `).join('');
+}
+
+function renderMonitoredByList(list) {
+    const el = document.getElementById('mb-list');
+    if (!list.length) {
+        el.innerHTML = '<div class="empty"><div class="ei">🛡️</div><p>Không có ai đang giám sát bạn</p></div>';
+        return;
+    }
+    el.innerHTML = list.map(m => `
+        <div class="mitem">
+            <div class="mava" style="background:#eef3ff;font-size:22px">🛡️</div>
+            <div class="minf">
+                <div class="mn">${m.name}</div>
+                <div class="me2">STK: ${m.stk}</div>
+                <div class="mt2" style="color:#1565c0">⚠️ Sẽ duyệt nếu bạn chuyển trên ${fmt(m.threshold)} ₫</div>
+            </div>
         </div>
     `).join('');
 }
 
 // ── APPROVAL MODAL ──
 function openApproval(data) {
-    document.getElementById('ap-from').textContent = `${data.fromName} (${data.from})`;
-    document.getElementById('ap-to').textContent   = `${data.toName} (${data.to})`;
+    document.getElementById('ap-from').textContent     = data.fromName;
+    document.getElementById('ap-from-stk').textContent = data.fromStk || data.from;
+    document.getElementById('ap-to').textContent       = data.toName;
+    document.getElementById('ap-to-stk').textContent   = data.toStk || data.to;
     document.getElementById('ap-amt').textContent  = fmt(data.amount) + ' ₫';
     document.getElementById('ap-note').textContent = data.note || '—';
     document.getElementById('ov-approval').classList.add('on');
-    timeLeft = data.timeLeft ?? 600;
+    timeLeft = data.timeLeft ?? 180;
     tickApproval();
     clearInterval(timerID);
     timerID = setInterval(() => {
         timeLeft--;
         tickApproval();
-        if (timeLeft <= 60) document.getElementById('timering').classList.add('urg');
+        if (timeLeft <= 30) document.getElementById('timering').classList.add('urg');
         if (timeLeft <= 0)  { clearInterval(timerID); closeApproval(); }
     }, 1000);
 }
@@ -675,21 +869,42 @@ async function rejectTx() {
 function openPending(amount, toEmail) {
     document.getElementById('p-amt').textContent = fmt(amount) + ' ₫';
     document.getElementById('p-to').textContent  = '→ ' + toEmail;
+    // Reset về phase 1
+    document.getElementById('pend-phase1').style.display = '';
+    document.getElementById('pend-phase2').style.display = 'none';
+    document.getElementById('p-cancel-btn').style.display = '';
+    document.getElementById('p-timer').style.color = '';
     document.getElementById('ov-pending').classList.add('on');
-    pendTimeLeft = 600;
-    tickPending();
+    pendTimeLeft = 180; // 3 phút phase 1
+    tickPending('⏳');
     clearInterval(pendTimerID);
     pendTimerID = setInterval(() => {
         pendTimeLeft--;
-        tickPending();
-        if (pendTimeLeft <= 0) { clearInterval(pendTimerID); closePending(); }
+        tickPending('⏳');
+        if (pendTimeLeft <= 0) clearInterval(pendTimerID);
     }, 1000);
 }
 
-function tickPending() {
+function startAutoPhase(autoIn) {
+    // Chuyển sang phase 2: đếm ngược 7 phút tự động thực hiện
+    clearInterval(pendTimerID);
+    document.getElementById('pend-phase1').style.display = 'none';
+    document.getElementById('pend-phase2').style.display = '';
+    document.getElementById('p-cancel-btn').style.display = 'none';
+    document.getElementById('p-timer').style.color = 'var(--green)';
+    pendTimeLeft = autoIn;
+    tickPending('🟢');
+    pendTimerID = setInterval(() => {
+        pendTimeLeft--;
+        tickPending('🟢');
+        if (pendTimeLeft <= 0) clearInterval(pendTimerID);
+    }, 1000);
+}
+
+function tickPending(icon = '⏳') {
     const m = String(Math.floor(pendTimeLeft/60)).padStart(2,'0');
     const s = String(pendTimeLeft % 60).padStart(2,'0');
-    document.getElementById('p-timer').textContent = `⏳ Còn ${m}:${s}`;
+    document.getElementById('p-timer').textContent = `${icon} Còn ${m}:${s}`;
 }
 
 function closePending() {
