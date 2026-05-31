@@ -12,9 +12,26 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ─── IN-MEMORY STORE ───
 const users = {
-    'pva@gmail.com': { name: 'PHẠM VIỆT ANH',   password: '123456', balance: 50000000, stk: '1234123412', txs: [] },
-    'tma@gmail.com': { name: 'TRƯƠNG MINH ANH', password: '234567', balance: 30000000, stk: '2345234523', txs: [] },
-    'pqa@gmail.com': { name: 'PHÙNG QUỲNH ANH', password: '345678', balance: 20000000, stk: '3456345634', txs: [] },
+    'pva@gmail.com': { name: 'PHẠM VIỆT ANH',     password: '123456', balance: 50000000, stk: '1234123412', txs: [] },
+    'tma@gmail.com': { name: 'TRƯƠNG MINH ANH',   password: '234567', balance: 30000000, stk: '2345234523', txs: [] },
+    'pqa@gmail.com': { name: 'PHÙNG QUỲNH ANH',   password: '345678', balance: 20000000, stk: '3456345634', txs: [] },
+    'nhb@gmail.com': { name: 'NGUYỄN HOÀNG BÁCH', password: '456789', balance: 10000000, stk: '4567456745', txs: [] },
+};
+
+// Risk levels: 'safe' | 'warning' | 'danger'
+const riskLevels = {
+    '3456345634': {
+        level: 'danger',
+        reason: 'Tài khoản có dấu hiệu rủi ro cao',
+        detail: 'Tài khoản nằm trong danh sách nghi ngờ gian lận, lừa đảo được phát hiện bởi hệ thống Agribank.',
+        reports: 0,
+    },
+    '4567456745': {
+        level: 'warning',
+        reason: 'Tài khoản tiềm ẩn rủi ro',
+        detail: 'Tài khoản có dấu hiệu bất thường, quý khách cần cân nhắc khi thực hiện giao dịch.',
+        reports: 0,
+    },
 };
 
 // { adminEmail: [{ email, name, stk, threshold }] }
@@ -104,6 +121,13 @@ app.get('/api/user/:email', (req, res) => {
     if (!u) return res.status(404).json({ error: 'Không tìm thấy' });
     const { email } = req.params;
     res.json({ email, ...u });
+});
+
+// Risk level by STK
+app.get('/api/risk/:stk', (req, res) => {
+    const risk = riskLevels[req.params.stk];
+    if (!risk) return res.json({ level: 'safe', reason: 'Tài khoản an toàn', detail: 'Không ghi nhận dấu hiệu bất thường.', reports: 0 });
+    res.json(risk);
 });
 
 // Lookup STK
